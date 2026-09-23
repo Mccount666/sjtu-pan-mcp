@@ -162,6 +162,11 @@ Windows 上如果 `sjtu-pan-mcp` 不在 PATH，写成完整路径，例如：
 - 已知细节：文件下载是 302 到预签名 S3 URL，跟随重定向时不能携带原 query 参数否则签名失效；`user_id` 参数仅用于流量统计
 - 接口响应字段未公开文档，客户端对 JSON 形状做了容错解析；如交大云盘改版，优先改 `client.py` 里的归一化函数
 
+## Contributors
+
+- [Mccount666](https://github.com/Mccount666) — 项目作者
+- [Claude](https://claude.ai) — AI 辅助开发
+
 ## License
 
 [MIT](LICENSE)
