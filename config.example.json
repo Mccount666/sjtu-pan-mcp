@@ -1,0 +1,11 @@
+{
+  "user_token": "在这里粘贴浏览器 Cookie 中的 USER_TOKEN 值（或直接用 sjtu-pan-mcp login 弹窗登录自动写入）",
+  "default_download_dir": "~/Downloads/sjtu-pan",
+  "organization_id": 0,
+  "allowed_url_hosts": [
+    "pan.sjtu.edu.cn",
+    ".sjtu.edu.cn",
+    ".myqcloud.com",
+    ".qcloud.com"
+  ]
+}

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sjtu-pan-mcp"
+version = "0.1.0"
+description = "MCP server for SJTU Pan (交大云盘, pan.sjtu.edu.cn): browse spaces and download files locally"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.30,<2",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+# Interactive browser login (pops up a Chromium window).
+gui = ["playwright>=1.60"]
+# Only needed for the best-effort browser-cookie extraction helper.
+cookie = ["cryptography>=42"]
+
+[project.scripts]
+sjtu-pan-mcp = "sjtu_pan_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
