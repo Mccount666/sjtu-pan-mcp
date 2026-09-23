@@ -1,5 +1,7 @@
 # sjtu-pan-mcp — 交大云盘 MCP 工具
 
+> ⚠️ **AI 辅助生成，谨慎使用**
+
 让 AI agent 直接浏览上海交通大学云盘（[pan.sjtu.edu.cn](https://pan.sjtu.edu.cn)）里的文件，并下载到本地。
 
 基于对交大云盘 Web 前端实际接口的逆向（两层 API：`user_token` 会话层 → 空间 `access_token` 层），**不接触账号密码**，只复用一次扫码登录产生的会话。
