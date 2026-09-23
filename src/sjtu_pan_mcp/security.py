@@ -167,6 +167,37 @@ def safe_join(dest_dir: str, *names: str) -> str:
     return target
 
 
+def confined_target(dest_dir: str, name: str) -> str:
+    """Resolve ``name`` inside ``dest_dir`` and prove it stays there.
+
+    The name is sanitized first (no separators, no ADS, no reserved
+    device names), then the resolved absolute path is checked to sit
+    directly inside the destination directory. This is the single place
+    where remote-controlled names become local paths, so the containment
+    check lives here rather than at each call site.
+    """
+    safe = safe_name(name)
+    base = os.path.realpath(dest_dir)
+    candidate = os.path.realpath(os.path.join(base, safe))
+    if os.path.dirname(candidate) != base:
+        raise UnsafeUrlError(f"path escapes destination directory: {name!r}")
+    return candidate
+
+
+def open_confined(dest_dir: str, name: str, mode: str = "wb"):
+    """Open a file for writing inside ``dest_dir`` under a sanitized name.
+
+    Returns an open file object; the caller closes it. The path is
+    produced by :func:`confined_target`, so it can never point outside
+    ``dest_dir`` regardless of what ``name`` contains.
+    """
+    target = confined_target(dest_dir, name)
+    parent = os.path.dirname(target)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    return open(target, mode)
+
+
 def resolve_redirect(base_url: str, location: str) -> str:
     """Resolve a possibly-relative ``Location`` header against ``base_url``."""
     return urljoin(base_url, location)

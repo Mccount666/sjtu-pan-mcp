@@ -34,6 +34,18 @@ try:
     raise SystemExit("safe_join should have raised")
 except security.UnsafeUrlError:
     pass
+# confined_target / open_confined: the only path where a remote name
+# becomes a local file
+import os, tempfile
+tmp = tempfile.mkdtemp()
+# separators are stripped by safe_name, so traversal attempts collapse
+# into a plain name inside the destination
+assert security.confined_target(tmp, "../../etc/passwd") == os.path.join(os.path.realpath(tmp), "passwd")
+assert security.confined_target(tmp, "..\\..\\evil") == os.path.join(os.path.realpath(tmp), "evil")
+with security.open_confined(tmp, "sub dir/../../x.txt", "wb") as fh:
+    fh.write(b"ok")
+assert os.listdir(tmp) == ["x.txt"], os.listdir(tmp)
+print("confined write OK")
 print("name checks OK")
 
 # --- path normalization ---

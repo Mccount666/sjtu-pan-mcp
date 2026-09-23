@@ -243,11 +243,9 @@ def _default_download_dir():
 
 
 def _safe_mkdir(dest: str, name: str):
-    from pathlib import Path
+    from .security import confined_target
 
-    from .security import safe_join, safe_name
-
-    target = Path(safe_join(dest, safe_name(name)))
+    target = Path(confined_target(dest, name))
     target.mkdir(parents=True, exist_ok=True)
     return target
 

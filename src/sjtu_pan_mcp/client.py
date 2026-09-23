@@ -437,10 +437,11 @@ class PanClient:
         token = self.get_space_token(space.space_id)
         remote = _norm_remote_path(file_path)
         # safe_name strips directory separators, NTFS ADS suffixes and
-        # reserved device names; safe_join then confines the result to
-        # dest_dir, so the local target can never escape it.
+        # reserved device names; confined_target then proves the local
+        # path sits inside dest_dir. The write itself goes through
+        # security.open_confined, which re-validates before opening.
         name = safe_name(filename or remote.rsplit("/", 1)[-1])
-        target = _unique_path(Path(safe_join(dest_dir, name)))
+        target = _unique_path(Path(security.confined_target(dest_dir, name)))
         params: Dict[str, Any] = {
             "access_token": token.access_token,
             "content_disposition": "attachment",
@@ -486,7 +487,7 @@ class PanClient:
                     continue
                 target.parent.mkdir(parents=True, exist_ok=True)
                 written = 0
-                with open(target, "wb") as fh:
+                with security.open_confined(dest_dir, target.name, "wb") as fh:
                     for chunk in resp.iter_bytes(chunk_size=1024 * 256):
                         written += len(chunk)
                         if written > max_bytes:
