@@ -43,7 +43,13 @@ assert n("a/b") == "/a/b"
 assert n("/a//b/") == "/a/b/"
 assert n("\\a\\b") == "/a/b"
 assert n("/a/./b") == "/a/b"
-print("path norm OK")
+for bad in ("/a/../../etc", "/../x", "..", "/a/b/../.."):
+    try:
+        n(bad)
+        raise SystemExit(f"'..' should be rejected: {bad}")
+    except client.PanError as e:
+        assert e.code == "InvalidPath", e
+print("path norm OK (incl. '..' rejection)")
 
 # --- entry normalization (tolerant shapes) ---
 data = {"contents": [

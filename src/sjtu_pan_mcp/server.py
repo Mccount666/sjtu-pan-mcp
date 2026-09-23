@@ -23,12 +23,13 @@ import asyncio
 import json
 import logging
 import sys
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import mcp.types as types
 from mcp.server import Server
 
-from . import __version__
+from . import __version__, security
 from .auth import extract_token_from_browsers, resolve_user_token, save_token
 from .client import Entry, NeedLoginError, PanClient, PanError, Space
 from .login import gui_login
@@ -212,7 +213,11 @@ def tool_download_dir(
             sub_rel = sub_rel[len(root.rstrip("/")) :].lstrip("/")
         else:
             sub_rel = ""
-        target_dir = base / sub_rel if sub_rel else base
+        target_dir = (
+            Path(security.safe_join(str(base), *sub_rel.split("/")))
+            if sub_rel
+            else base
+        )
         try:
             target = client.download_file(space, entry.path, str(target_dir))
             downloaded.append(

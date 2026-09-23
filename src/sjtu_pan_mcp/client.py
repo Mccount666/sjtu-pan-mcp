@@ -436,6 +436,9 @@ class PanClient:
         """Stream one file to ``dest_dir``; returns the local path."""
         token = self.get_space_token(space.space_id)
         remote = _norm_remote_path(file_path)
+        # safe_name strips directory separators, NTFS ADS suffixes and
+        # reserved device names; safe_join then confines the result to
+        # dest_dir, so the local target can never escape it.
         name = safe_name(filename or remote.rsplit("/", 1)[-1])
         target = _unique_path(Path(safe_join(dest_dir, name)))
         params: Dict[str, Any] = {
@@ -599,6 +602,8 @@ def _norm_remote_path(path: str) -> str:
     if not path.startswith("/"):
         path = "/" + path
     parts = [p for p in path.split("/") if p not in ("", ".")]
+    if any(p == ".." for p in parts):
+        raise PanError(400, "InvalidPath", "远程路径不允许包含 '..'")
     cleaned = "/" + "/".join(parts)
     if path.endswith("/") and cleaned != "/":
         cleaned += "/"
